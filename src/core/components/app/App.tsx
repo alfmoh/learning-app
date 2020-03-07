@@ -1,13 +1,18 @@
 import React from 'react';
 import './App.scss';
+import Post from '../Post';
 
 
 export class App extends React.Component {
   state = {}
 
+  
+
   render() {
     return (
-      <div></div>
+      <div>
+        <Post />
+      </div>
     )
   }
 }
