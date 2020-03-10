@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.scss';
 import Post from '../Post';
+import Nav from '../Nav';
 
 
 export class App extends React.Component {
@@ -11,6 +12,7 @@ export class App extends React.Component {
   render() {
     return (
       <div className="app-main">
+        <Nav />
         <Post />
       </div>
     )

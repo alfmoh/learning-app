@@ -1,7 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 import './Post.scss';
-import { Image, List, Container, Card } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
 class Post extends React.Component<any, any> {
   state = {
