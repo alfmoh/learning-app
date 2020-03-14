@@ -15,10 +15,6 @@
         display: flex;
         flex-direction: column;
 
-        &:first-child {
-            margin-top: 5.5rem;
-        }
-
         &__question {
             margin-bottom: 0.625rem;
         }

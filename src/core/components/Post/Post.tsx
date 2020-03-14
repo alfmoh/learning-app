@@ -1,6 +1,7 @@
 import * as React from 'react';
 import './Post.scss';
 
+
 class Post extends React.Component<any, any> {
   state = {};
 
