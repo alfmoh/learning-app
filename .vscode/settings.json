@@ -1,5 +1,6 @@
 {
     "javascript.preferences.quoteStyle": "single",
     "typescript.preferences.quoteStyle": "single",
-    "prettier.singleQuote": true
+    "prettier.singleQuote": true,
+    "px-to-rem.px-per-rem": 16
 }
