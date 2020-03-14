@@ -7,14 +7,15 @@ import Home from '../Home';
 import Nav from '../Nav';
 
 export class App extends React.Component {
+
   render() {
     return (
       <Fragment>
         <div className="app-main">
-          <div className="la-nav-bar">
+          <div className="la-nav-bar la-sticky">
             <Nav />
           </div>
-          <Router>
+          <Router className="la-content">
             <PostDetail path="post/:id" />
             <Home path="/" />
           </Router>

@@ -1,8 +1,13 @@
+html {
+    scroll-behavior: smooth;
+}
+
 .app-main {
     background-color: #F5F7FB;
 }
 
-.la-nav-bar {
-    // position: fixed;
-    // width: 100%;
+.la-sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
 }
