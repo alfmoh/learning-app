@@ -18,13 +18,10 @@ class Post extends React.Component<any, any> {
     return (
       <article className="la-card-content">
         <section className="la-card-content__question">
-          <strong>{this.trimParagraphs(post.body)}</strong>
+          <strong>{this.trimParagraphs(post.question.body)}</strong>
         </section>
         <section className="la-card-content__answer">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore ut
-          magni recusandae excepturi tempore. Minus illum voluptatibus
-          necessitatibus molestias, aut laudantium vero at nostrum tempora optio
-          itaque sequi rem odio?
+        {this.trimParagraphs(post.answer.body)}
         </section>
       </article>
     );
