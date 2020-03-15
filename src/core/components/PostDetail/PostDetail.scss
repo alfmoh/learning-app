@@ -1,0 +1,21 @@
+.la-post-detail {
+    height: 100%;
+
+    &-container {
+        background-color: #FFF;
+        margin-bottom: 1.25rem;
+        padding: 1.25rem;
+        border-radius: .28571429rem;
+        box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &-question {
+        margin-bottom: 20px;
+    }
+}
+
+.la-left--space {
+    padding-left: 20px;
+}

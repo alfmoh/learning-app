@@ -1,15 +1,21 @@
 import * as React from 'react';
-import { Menu, Input, Button, Dropdown } from 'semantic-ui-react';
+import { Menu, Input, Button, Dropdown, Container } from 'semantic-ui-react';
 import './Nav.scss';
+import { Link } from '@reach/router';
 
 class Nav extends React.Component<any, any> {
   state = {};
 
   public render() {
     return (
-      <div className="la-menu-container">
+      <Container fluid>
+        <div className="la-menu-container">
         <Menu secondary>
-          <Menu.Item header>Learning App</Menu.Item>
+          <Menu.Item header>
+            <Link to="/">
+              Learning App
+            </Link>
+          </Menu.Item>
           <Menu.Item>
             <Input className="icon" icon="search" placeholder="Search..." />
           </Menu.Item>
@@ -28,6 +34,7 @@ class Nav extends React.Component<any, any> {
           </Menu.Item>
         </Menu>
       </div>
+      </Container>
     );
   }
 }

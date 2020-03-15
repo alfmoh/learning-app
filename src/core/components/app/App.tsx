@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, Suspense } from 'react';
 
 import './App.scss';
 import { Router } from '@reach/router';
@@ -7,7 +7,6 @@ import Home from '../Home';
 import Nav from '../Nav';
 
 export class App extends React.Component {
-
   render() {
     return (
       <Fragment>
@@ -15,10 +14,12 @@ export class App extends React.Component {
           <div className="la-nav-bar la-sticky">
             <Nav />
           </div>
-          <Router className="la-content">
-            <PostDetail path="post/:id" />
-            <Home path="/" />
-          </Router>
+          <Suspense fallback={<h1>Loading....</h1>}>
+            <Router className="la-content">
+              <PostDetail path="posts/:id" />
+              <Home path="/" />
+            </Router>
+          </Suspense>
         </div>
       </Fragment>
     );
