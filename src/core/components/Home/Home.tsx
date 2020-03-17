@@ -1,5 +1,4 @@
 import * as React from 'react';
-import axios from 'axios';
 import { Link } from '@reach/router';
 import Post from '../Post';
 import './Home.scss';

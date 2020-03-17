@@ -5,6 +5,7 @@ import { Helpers } from '../../../helpers/Helpers';
 import './PostDetail.scss';
 import { Container, Divider } from 'semantic-ui-react';
 import MJ from 'react-mathjax-ts';
+import PostForm from '../PostForm';
 
 class PostDetail extends React.Component<any, any> {
   state = {
@@ -75,6 +76,10 @@ class PostDetail extends React.Component<any, any> {
             </div>
           </div>
         )}
+        <h2>Your Answer</h2>
+        <div className="la-left--space">
+          <PostForm></PostForm>
+        </div> 
       </Container>
     );
   }

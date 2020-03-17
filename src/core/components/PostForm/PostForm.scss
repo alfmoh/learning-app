@@ -1,0 +1,30 @@
+.la-post-form {
+    display: flex;
+    flex-direction: column;
+
+    &__input {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    &__button {
+        width: fit-content;
+        margin-bottom: 20px !important;
+    }
+
+    &__error {
+        color: #ff0000;
+        align-self: flex-end;
+    }
+
+    &-editor {
+        margin-bottom: 20px;
+
+        &__area {}
+    }
+}
+
+.ql-container.ql-snow {
+    background-color: #fff;
+    min-height: 400px;
+}
