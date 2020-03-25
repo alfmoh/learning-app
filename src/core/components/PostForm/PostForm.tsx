@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { Formik } from 'formik';
 import './PostForm.scss';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import TextEditor from '../../../shared';
 
-class PostForm extends React.Component<any, any> {
+class PostForm extends React.Component<any> {
   constructor(props: any) {
     super(props);
     this.state = { text: '' };
@@ -54,12 +53,7 @@ class PostForm extends React.Component<any, any> {
                 />
               </div> */}
               <div className="la-post-form-editor">
-                <ReactQuill
-                  value={this.state.text}
-                  onChange={this.handleChange}
-                >
-                {/* <div className="la-post-form-editor__area"/> */}
-                </ReactQuill>
+                <TextEditor />
               </div>
               <button
                 className="ui primary button la-post-form__button"
