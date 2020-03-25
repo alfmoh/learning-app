@@ -21,7 +21,9 @@ class Nav extends React.Component<any, any> {
           </Menu.Item>
           <Menu.Item>
             <span className="la-question">
-              <Button color="green">Ask a question</Button>
+              <Link to="question">
+                <Button color="green">Ask a question</Button>
+              </Link>
             </span>
             <span>
               <Dropdown icon="user">

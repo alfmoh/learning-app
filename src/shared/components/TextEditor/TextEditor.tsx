@@ -13,6 +13,7 @@ class TextEditor extends Component<any> {
   };
 
   handleChange(content: any) {
+    this.props.onValChange(content);
     this.setState({
       content
     });

@@ -5,6 +5,7 @@ import { Router } from '@reach/router';
 import PostDetail from '../PostDetail';
 import Home from '../Home';
 import Nav from '../Nav';
+import Question from '../Question';
 
 export class App extends React.Component {
   render() {
@@ -18,6 +19,7 @@ export class App extends React.Component {
             <Router className="la-content">
               <PostDetail path="posts/:id" />
               <Home path="/" />
+              <Question path="question"/>
             </Router>
           </Suspense>
         </div>

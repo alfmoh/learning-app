@@ -1,0 +1,16 @@
+.la-post-form {
+    &-top {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__title {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    &__input {
+        margin-bottom: 20px !important;
+    }
+}

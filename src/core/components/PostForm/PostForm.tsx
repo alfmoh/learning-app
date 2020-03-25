@@ -8,20 +8,25 @@ class PostForm extends React.Component<any> {
     super(props);
     this.state = { text: '' };
     this.handleChange = this.handleChange.bind(this);
+    this.onTextChange = this.onTextChange.bind(this);
   }
 
   handleChange(value: any) {
     this.setState({ text: value });
   }
 
+  onTextChange(val) {
+    console.log(val);
+  }
+
   public render() {
     return (
       <div>
         <Formik
-          initialValues={{ title: '' }}
+          initialValues={{ title: '', content: '' }}
           validate={values => {
             const errors: any = {};
-            if (!values.title) {
+            if (!values.title || !values.content) {
               errors.title = 'Required';
             }
             return errors;
@@ -40,7 +45,7 @@ class PostForm extends React.Component<any> {
             handleChange
           }) => (
             <form className="la-post-form" onSubmit={handleSubmit}>
-              <span className="la-post-form__error">
+              <span className="la-post-form__error text--error">
                 {errors.title && touched.title && errors.title}
               </span>
               {/* <div className="ui input la-post-form__input">
@@ -53,7 +58,7 @@ class PostForm extends React.Component<any> {
                 />
               </div> */}
               <div className="la-post-form-editor">
-                <TextEditor />
+                <TextEditor onValChange = {this.onTextChange}/>
               </div>
               <button
                 className="ui primary button la-post-form__button"

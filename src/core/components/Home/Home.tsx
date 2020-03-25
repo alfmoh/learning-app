@@ -22,7 +22,7 @@ class Home extends React.Component<any, any> {
       <div className="la-posts">
         {this.state.posts.map((post: IQuestionAnswer) => (
           <Link
-            className="la-post-link"
+            className="la-post-link no--link"
             key={post.question.id}
             to={'posts/' + post.question.id}
           >

@@ -1,0 +1,13 @@
+.no--link {
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+        color: inherit;
+    }
+}
+
+.text--error {
+    color: #ff0000;
+    // align-self: flex-end;
+}
