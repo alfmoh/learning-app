@@ -14,6 +14,7 @@ class PostDetail extends React.Component<any, any> {
   async componentDidMount() {
     const service = new PostService();
     const { data } = await service.getQuestionAndAnswer(this.props.id);
+    window.scrollTo(0, 0);
 
     this.setState({
       post: data as IQuestionAnswer

@@ -4,13 +4,17 @@
         flex-direction: column;
     }
 
-    &__title {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 5px;
+    &-tags {
+        margin-bottom: 10px;
     }
 
     &__input {
         margin-bottom: 20px !important;
     }
+}
+
+.label--bold {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
 }

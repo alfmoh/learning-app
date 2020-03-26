@@ -4,33 +4,53 @@ import { Formik } from 'formik';
 import { Container } from 'semantic-ui-react';
 import './Question.scss';
 import { Helpers } from '../../../helpers/Helpers';
+import Chips from 'react-chips';
 
 class Question extends React.Component<any, any> {
   constructor(props) {
     super(props);
     this.onTextChange = this.onTextChange.bind(this);
+    this.onTagsChange = this.onTagsChange.bind(this);
   }
-  state = {};
+  state = {
+    tags: []
+  };
   textBoxContent = '';
   onTextChange(val: string) {
     this.textBoxContent = val;
+  }
+  onTagsChange(tags: []) {
+    this.setState({
+      tags
+    });
+  }
+  componentDidMount() {
+    window.scrollTo(0, 0);
   }
   public render() {
     return (
       <Container>
         <div>
           <Formik
-            initialValues={{ title: '', content: '' }}
+            initialValues={{ title: '', content: '', tags: [] }}
             validate={values => {
               const errors: any = {};
               const noHtml = Helpers.trimParagraphs(this.textBoxContent);
               values.content = this.textBoxContent;
               if (!values.title) {
+                window.scrollTo(0, 0);
                 errors.title = 'Required';
               }
               if (!noHtml) {
+                window.scrollTo(0, 0);
                 errors.content = 'Required';
               }
+              // values.tags = this.state.tags;
+              if (!values.tags.length) {
+                errors.tags = 'Specify at least one tag';
+              }
+              console.log(this.state.tags);
+              console.log(errors);
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
@@ -44,12 +64,13 @@ class Question extends React.Component<any, any> {
               isSubmitting,
               touched,
               handleSubmit,
-              handleChange
+              handleChange,
+              setFieldValue
             }) => (
               <form className="la-post-form" onSubmit={handleSubmit}>
                 <div className="ui input la-post-form-top">
                   <label
-                    className="la-post-form__title"
+                    className="la-post-form__title label--bold"
                     htmlFor="question-input"
                   >
                     Title
@@ -77,6 +98,19 @@ class Question extends React.Component<any, any> {
                     </div>
                     <TextEditor onValChange={this.onTextChange} />
                   </div>
+                </div>
+                <div className="la-post-form-tags">
+                  <label htmlFor="" className="label--bold">
+                    Tags
+                  </label>
+                  <span className="text--error">
+                    {errors.tags && touched.tags && errors.tags}
+                  </span>
+                  <Chips
+                    value={values.tags}
+                    onChange={(tag: any) => setFieldValue('tags', tag)}
+                    suggestions={['Physics', 'Maths', 'Science']}
+                  />
                 </div>
                 <button
                   className="ui primary button la-post-form__button"
