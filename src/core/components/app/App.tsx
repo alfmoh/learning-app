@@ -6,26 +6,28 @@ import PostDetail from '../PostDetail';
 import Home from '../Home';
 import Nav from '../Nav';
 import Question from '../Question';
+import Auth from '../Auth';
 
 export class App extends React.Component {
-  render() {
-    return (
-      <Fragment>
-        <div className="app-main">
-          <div className="la-nav-bar la-sticky">
-            <Nav />
-          </div>
-          <Suspense fallback={<h1>Loading....</h1>}>
-            <Router className="la-content">
-              <PostDetail path="posts/:id" />
-              <Home path="/" />
-              <Question path="question"/>
-            </Router>
-          </Suspense>
-        </div>
-      </Fragment>
-    );
-  }
+    render() {
+        return (
+            <Fragment>
+                <div className="app-main">
+                    <div className="la-nav-bar la-sticky">
+                        <Nav />
+                    </div>
+                    <Suspense fallback={<h1>Loading....</h1>}>
+                        <Router className="la-content">
+                            <PostDetail path="posts/:id" />
+                            <Home path="/" />
+                            <Question path="question" />
+                            <Auth path="auth" />
+                        </Router>
+                    </Suspense>
+                </div>
+            </Fragment>
+        );
+    }
 }
 
 export default App;

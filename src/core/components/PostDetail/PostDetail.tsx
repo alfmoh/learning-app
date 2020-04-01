@@ -68,10 +68,11 @@ class PostDetail extends React.Component<any, any> {
                 </div>
               </div>
               <div className="la-post-detail-tags">
-                {this.state.post.question.tags.replace(/</gi, '').split('>').map((tag, index) => {
+                {((this.state.post.question.tags || '').replace(/</gi, '').split('>') || []).map((tag, index) => {
                   if(tag) {
                     return <Label className="la-post-detail-tags__tag" key={index}>{tag}</Label>
                   }
+                  return '';
                 })}
               </div>
               <Divider />

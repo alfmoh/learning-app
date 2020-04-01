@@ -1,12 +1,13 @@
-import axios from 'axios';
-export class PostService {
-  URL = 'http://localhost:5000/api/posts';
+import { WebService } from './Web.service';
+import { QuestionAnswer } from '../models/IQuestionAnswer';
+export class PostService extends WebService<QuestionAnswer | QuestionAnswer[]> {
+    URL = 'posts/fullposts';
 
-  getQuestionsAndAnswers() {
-    return axios.get(this.URL + '/fullposts');
-  }
+    getQuestionsAndAnswers() {
+        return this.get<QuestionAnswer[]>();
+    }
 
-  getQuestionAndAnswer(questionId: number) {
-    return axios.get(`${this.URL}/fullposts/${questionId}`);
-  }
+    getQuestionAndAnswer(questionId: number) {
+        return this.get<QuestionAnswer>(`${questionId}`);
+    }
 }
