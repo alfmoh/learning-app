@@ -49,8 +49,6 @@ class Question extends React.Component<any, any> {
               if (!values.tags.length) {
                 errors.tags = 'Specify at least one tag';
               }
-              console.log(this.state.tags);
-              console.log(errors);
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
