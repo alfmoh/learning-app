@@ -2,4 +2,10 @@
     &-wrapper {
         min-width: 25rem;
     }
+
+    &__fail {
+        padding-bottom: 5px;
+        text-align: center;
+        color: #ff0000;
+    }
 }

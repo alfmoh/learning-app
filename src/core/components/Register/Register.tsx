@@ -1,18 +1,21 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, Fragment } from 'react';
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage, Form } from 'formik';
 import './Register.scss';
+import { User } from '../../../models/IUser';
+import { AuthService } from '../../../services/Auth.service';
 
 const Register: FunctionComponent<any> = () => {
+    const authService = new AuthService();
     return (
-        <>
+        <Fragment>
             <div className="la-register-wrapper">
                 <Formik
                     initialValues={{
                         userName: '',
                         email: '',
                         password: '',
-                        passwordConfirm: ''
+                        confirmPassword: ''
                     }}
                     validationSchema={Yup.object({
                         userName: Yup.string()
@@ -24,16 +27,25 @@ const Register: FunctionComponent<any> = () => {
                         password: Yup.string()
                             .required('Required')
                             .min(8, 'Must be 8 characters or more'),
-                        passwordConfirm: Yup.string()
+                        confirmPassword: Yup.string()
                             .required('Required')
                             .oneOf(
                                 [Yup.ref('password'), null],
                                 'Passwords must match'
                             )
                     })}
-                    onSubmit={(values, { setSubmitting }) => {
-                        console.log(values);
-                        setSubmitting(false);
+                    onSubmit={(values: RegisterUser, { setSubmitting }) => {
+                        const user: RegisterUser = { ...values };
+                        authService
+                            .register(user as User)
+                            .then(val => {
+                                console.log(val);
+                                setSubmitting(false);
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                setSubmitting(false);
+                            });
                     }}
                 >
                     <Form className="ui form">
@@ -53,11 +65,11 @@ const Register: FunctionComponent<any> = () => {
                             <ErrorMessage name="password" />
                         </div>
                         <div className="field">
-                            <label htmlFor="passwordConfirm">
+                            <label htmlFor="confirmPassword">
                                 Confirm Password
                             </label>
-                            <Field name="passwordConfirm" type="password" />
-                            <ErrorMessage name="passwordConfirm" />
+                            <Field name="confirmPassword" type="password" />
+                            <ErrorMessage name="confirmPassword" />
                         </div>
                         <button className="ui button" type="submit">
                             Submit
@@ -65,8 +77,12 @@ const Register: FunctionComponent<any> = () => {
                     </Form>
                 </Formik>
             </div>
-        </>
+        </Fragment>
     );
 };
+
+class RegisterUser extends User {
+    confirmPassword: string;
+}
 
 export default Register;

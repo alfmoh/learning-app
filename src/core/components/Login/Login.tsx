@@ -1,12 +1,21 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, Fragment, useState } from 'react';
 import * as Yup from 'yup';
 import './Login.scss';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { AuthService } from '../../../services/Auth.service';
+import { User } from '../../../models/IUser';
 
 const Login: FunctionComponent<any> = () => {
+    const authService = new AuthService();
+    const [inValid, setInValid] = useState(false);
     return (
-        <>
+        <Fragment>
             <div className="la-login-wrapper">
+                {inValid && (
+                    <div className="la-login__fail">
+                        Email or Password is incorrect
+                    </div>
+                )}
                 <Formik
                     initialValues={{ email: '', password: '' }}
                     validationSchema={Yup.object({
@@ -17,9 +26,21 @@ const Login: FunctionComponent<any> = () => {
                             .required('Required')
                             .min(8, 'Must be 8 characters or more')
                     })}
-                    onSubmit={(values, { setSubmitting }) => {
-                        console.log(values);
-                        setSubmitting(false);
+                    onSubmit={(values: UserLogin, { setSubmitting }) => {
+                        const user: UserLogin = { ...values };
+                        authService
+                            .login(user as User)
+                            .then(val => {
+                                setInValid(false);
+                                console.log(val);
+                                setSubmitting(false);
+                            })
+                            .catch(error => {
+                                if (error.response.status === 401) {
+                                    setInValid(true);
+                                }
+                                setSubmitting(false);
+                            });
                     }}
                 >
                     <Form className="ui form">
@@ -39,8 +60,13 @@ const Login: FunctionComponent<any> = () => {
                     </Form>
                 </Formik>
             </div>
-        </>
+        </Fragment>
     );
 };
+
+class UserLogin {
+    email: string;
+    password: string;
+}
 
 export default Login;
