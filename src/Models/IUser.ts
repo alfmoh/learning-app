@@ -9,3 +9,12 @@ export class User implements IUser {
     email: string;
     password: string;
 }
+
+export class LoginUser {
+    nameid: number;
+    given_name: string;
+    email: string;
+    nbf: number;
+    exp: number;
+    iat: number;
+}

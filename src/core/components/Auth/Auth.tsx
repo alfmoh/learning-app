@@ -8,18 +8,18 @@ import Login from '../Login';
 class Auth extends Component<any> {
     panes = [
         {
-            menuItem: 'Register',
-            render: () => (
-                <Tab.Pane>
-                    <Register />
-                </Tab.Pane>
-            )
-        },
-        {
             menuItem: 'Login',
             render: () => (
                 <Tab.Pane>
                     <Login />
+                </Tab.Pane>
+            )
+        },
+        {
+            menuItem: 'Register',
+            render: () => (
+                <Tab.Pane>
+                    <Register />
                 </Tab.Pane>
             )
         }

@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import './Login.scss';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { AuthService } from '../../../services/Auth.service';
-import { User } from '../../../models/IUser';
+import { User, LoginUser } from '../../../models/IUser';
 
 const Login: FunctionComponent<any> = () => {
     const authService = new AuthService();
@@ -30,9 +30,9 @@ const Login: FunctionComponent<any> = () => {
                         const user: UserLogin = { ...values };
                         authService
                             .login(user as User)
-                            .then(val => {
+                            .then((user : LoginUser) => {
                                 setInValid(false);
-                                console.log(val);
+                                console.log(user);
                                 setSubmitting(false);
                             })
                             .catch(error => {
