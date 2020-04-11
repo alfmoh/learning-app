@@ -4,6 +4,7 @@ import Post from '../Post';
 import './Home.scss';
 import { IQuestionAnswer } from '../../../models/IQuestionAnswer';
 import { PostService } from '../../../services/Post.service';
+import LaLoader from '../../../shared/components/Loader';
 
 class Home extends React.Component<any, any> {
     state = {
@@ -18,19 +19,20 @@ class Home extends React.Component<any, any> {
         });
     }
     public render() {
-        return (
-            <div className="la-posts">
-                {this.state.posts.map((post: IQuestionAnswer) => (
-                    <Link
-                        className="la-post-link no--link"
-                        key={post.question.id}
-                        to={'posts/' + post.question.id}
-                    >
-                        <Post post={post} />
-                    </Link>
-                ))}
-            </div>
+        const postsCards = !this.state.posts.length ? (
+            <LaLoader />
+        ) : (
+            this.state.posts.map((post: IQuestionAnswer) => (
+                <Link
+                    className="la-post-link no--link"
+                    key={post.question.id}
+                    to={'posts/' + post.question.id}
+                >
+                    <Post post={post} />
+                </Link>
+            ))
         );
+        return <div className="la-posts">{postsCards}</div>;
     }
 }
 

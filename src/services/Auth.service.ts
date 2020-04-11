@@ -19,7 +19,8 @@ export class AuthService extends WebService<User> {
 
     isLoggedIn() {
         const user = this.getUser(this.getToken());
-        return Date.now() >= user?.exp * 1000 ? false : true;
+        // if(!user) return false;
+        return Date.now() <= user?.exp * 1000;
     }
 
     private getUser(token: string): LoginUser {
