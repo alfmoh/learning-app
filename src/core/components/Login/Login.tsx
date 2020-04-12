@@ -5,7 +5,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { AuthService } from '../../../services/Auth.service';
 import { User, LoginUser } from '../../../models/IUser';
 
-const Login: FunctionComponent<any> = () => {
+const Login: FunctionComponent<any> = (props: any) => {
     const authService = new AuthService();
     const [inValid, setInValid] = useState(false);
     return (
@@ -30,13 +30,15 @@ const Login: FunctionComponent<any> = () => {
                         const user: UserLogin = { ...values };
                         authService
                             .login(user as User)
-                            .then((user : LoginUser) => {
+                            .then((user: LoginUser) => {
                                 setInValid(false);
-                                console.log(user);
+                                // console.log(user);
+                                props.onAuth();
                                 setSubmitting(false);
                             })
                             .catch(error => {
-                                if (error.response.status === 401) {
+                                console.log(error);
+                                if (error?.response?.status === 401) {
                                     setInValid(true);
                                 }
                                 setSubmitting(false);

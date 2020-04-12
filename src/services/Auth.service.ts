@@ -20,6 +20,11 @@ export class AuthService extends WebService<User> {
         });
     }
 
+    logout() {
+        localStorage.removeItem('token');
+        this.loginUser = null;
+    }
+
     isLoggedIn() {
         const user = this.getUser(this.getToken());
         return Date.now() <= user?.exp * 1000;

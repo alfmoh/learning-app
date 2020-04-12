@@ -11,6 +11,13 @@ import { AuthService } from '../../../services/Auth.service';
 import { AppContext, LocationContext } from '../../../shared/contexts/Context';
 
 export class App extends React.Component {
+    constructor(props: any) {
+        super(props);
+        this.triggerUpdate = this.triggerUpdate.bind(this);
+    }
+    triggerUpdate() {
+        this.forceUpdate();
+    }
     render() {
         const auth = new AuthService();
         let prev = '/';
@@ -20,7 +27,7 @@ export class App extends React.Component {
                 <AppContext.Provider value={{ auth }}>
                     <div className="app-main">
                         <div className="la-nav-bar la-sticky">
-                            <Nav />
+                            <Nav onLogout={this.triggerUpdate} />
                         </div>
                         <Suspense fallback={<h1>Loading....</h1>}>
                             <Location>
@@ -49,6 +56,10 @@ export class App extends React.Component {
                                                         <Auth
                                                             appPath={appPath}
                                                             path="auth"
+                                                            onAuth={
+                                                                this
+                                                                    .triggerUpdate
+                                                            }
                                                         />
                                                     </Router>
                                                 )}

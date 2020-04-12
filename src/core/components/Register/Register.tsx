@@ -5,7 +5,7 @@ import './Register.scss';
 import { User } from '../../../models/IUser';
 import { AuthService } from '../../../services/Auth.service';
 
-const Register: FunctionComponent<any> = () => {
+const Register: FunctionComponent<any> = props => {
     const authService = new AuthService();
     return (
         <Fragment>
@@ -40,6 +40,7 @@ const Register: FunctionComponent<any> = () => {
                             .register(user as User)
                             .then(val => {
                                 console.log(val);
+                                props.onAuth();
                                 setSubmitting(false);
                             })
                             .catch(error => {

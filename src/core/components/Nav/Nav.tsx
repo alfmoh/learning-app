@@ -1,16 +1,8 @@
 import * as React from 'react';
-import {
-    Menu,
-    Input,
-    Button,
-    Dropdown,
-    Container,
-    Modal
-} from 'semantic-ui-react';
+import { Menu, Input, Button, Dropdown, Container } from 'semantic-ui-react';
 import './Nav.scss';
-import { Link } from '@reach/router';
-import Auth from '../Auth';
-import {AppContext} from '../../../shared/contexts/Context';
+import { Link, navigate } from '@reach/router';
+import { AppContext } from '../../../shared/contexts/Context';
 
 class Nav extends React.Component<any, any> {
     static contextType = AppContext;
@@ -40,32 +32,42 @@ class Nav extends React.Component<any, any> {
                                         </Button>
                                     </Link>
                                 ) : (
-                                    <Modal
-                                        className="la-nav-question__modal"
-                                        size="tiny"
-                                        trigger={
-                                            <Button color="green">
-                                                Ask a question
-                                            </Button>
-                                        }
-                                        centered={false}
+                                    <Button
+                                        color="green"
+                                        onClick={() => {
+                                            navigate('/auth');
+                                        }}
                                     >
-                                        <Modal.Header>
-                                            Login or register to ask a question
-                                        </Modal.Header>
-                                        <Modal.Content>
-                                            <Auth />
-                                        </Modal.Content>
-                                    </Modal>
+                                        Ask a question
+                                    </Button>
                                 )}
                             </span>
                             <span>
-                                <Dropdown icon="user">
-                                    <Dropdown.Menu>
-                                        <Dropdown.Item text="New" />
-                                        <Dropdown.Item text="Open..." />
-                                    </Dropdown.Menu>
-                                </Dropdown>
+                                {!this.context.auth.loginUser ? (
+                                    <Button
+                                        color="blue"
+                                        onClick={() => {
+                                            navigate('/auth');
+                                        }}
+                                    >
+                                        Login
+                                    </Button>
+                                ) : (
+                                    <Dropdown icon="user">
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item text="My Profile" />
+                                            <Dropdown.Item
+                                                text="Logout"
+                                                onClick={() => {
+                                                    return (() => {
+                                                        this.context.auth.logout();
+                                                        this.props.onLogout();
+                                                    })();
+                                                }}
+                                            />
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                )}
                             </span>
                         </Menu.Item>
                     </Menu>
