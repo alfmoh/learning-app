@@ -3,23 +3,25 @@ import { User, LoginUser } from '../models/IUser';
 import jwt_decode from 'jwt-decode';
 export class AuthService extends WebService<User> {
     URL = 'auth';
+    loginUser: LoginUser;
+    constructor() {
+        super();
+        this.loginUser = this.getUser(this.getToken());
+    }
     login(data: User) {
-        return this.post<any>(data, 'login')
-            .then(({ data }) => {
+        return this.post<any>(data, 'login').then(({ data }) => {
             return this.loginSuccess(data);
         });
     }
 
     register(data: User) {
-        return this.post<any>(data, 'register')
-            .then(({ data }) => {
+        return this.post<any>(data, 'register').then(({ data }) => {
             return this.loginSuccess(data);
         });
     }
 
     isLoggedIn() {
         const user = this.getUser(this.getToken());
-        // if(!user) return false;
         return Date.now() <= user?.exp * 1000;
     }
 

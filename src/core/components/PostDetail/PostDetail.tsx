@@ -3,24 +3,22 @@ import { PostService } from '../../../services/Post.service';
 import { IQuestionAnswer } from '../../../models/IQuestionAnswer';
 import { Helpers } from '../../../helpers/Helpers';
 import './PostDetail.scss';
-import { Container, Divider, Label  } from 'semantic-ui-react';
+import { Container, Divider, Label } from 'semantic-ui-react';
 import MJ from 'react-mathjax-ts';
 import PostForm from '../PostForm';
-import { AuthService } from '../../../services/Auth.service';
 import { Link } from '@reach/router';
 import LaLoader from '../../../shared/components/Loader';
+import { AppContext } from '../../../shared/contexts/Context';
 
 class PostDetail extends React.Component<any, any> {
-    authService: AuthService;
-    constructor(props) {
-        super(props);
-        this.authService = new AuthService();
-    }
+    static contextType = AppContext;
     state = {
         post: {} as IQuestionAnswer
     };
 
     async componentDidMount() {
+        const { appPath } = this.props;
+        console.log(appPath);
         const postService = new PostService();
 
         const { data } = await postService.getQuestionAndAnswer(this.props.id);
@@ -111,17 +109,19 @@ class PostDetail extends React.Component<any, any> {
                             </ul>
                         </div>
                     </div>
-                ): 
-                (<div>
-                  <LaLoader />
-                </div>)
-                }
+                ) : (
+                    <div>
+                        <LaLoader />
+                    </div>
+                )}
                 <h2>Your Answer</h2>
                 <div className="la-left--space">
                     <div className="la-post-detail-answer-form">
-                        {!this.authService.isLoggedIn() ? (
+                        {!this.context.auth.loginUser ? (
                             <Link className="no--link" to={'/auth'}>
-                              <button className="ui primary button la-post-detail-answer-form__login-button">Login to answer</button>
+                                <button className="ui primary button la-post-detail-answer-form__login-button">
+                                    Login to answer
+                                </button>
                             </Link>
                         ) : (
                             <PostForm></PostForm>

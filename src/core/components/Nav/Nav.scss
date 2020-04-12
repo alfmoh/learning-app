@@ -14,3 +14,11 @@
     display: flex;
     justify-content: space-evenly;
 }
+
+.la-nav {
+    &-question {
+        &__modal {
+            padding-bottom: 40px;
+        }
+    }
+}

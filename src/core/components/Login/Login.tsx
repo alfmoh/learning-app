@@ -47,14 +47,18 @@ const Login: FunctionComponent<any> = () => {
                         <div className="field">
                             <label htmlFor="email">Email</label>
                             <Field name="email" type="email" />
-                            <ErrorMessage name="email" />
+                            <div className="text--error">
+                                <ErrorMessage name="email" />
+                            </div>
                         </div>
                         <div className="field">
                             <label htmlFor="password">Password</label>
                             <Field name="password" type="password" />
-                            <ErrorMessage name="password" />
+                            <div className="text--error">
+                                <ErrorMessage name="password" />
+                            </div>
                         </div>
-                        <button className="ui button" type="submit">
+                        <button className="ui primary button" type="submit">
                             Submit
                         </button>
                     </Form>
