@@ -2,14 +2,7 @@ import * as React from 'react';
 import { PostService } from '../../../services/Post.service';
 import { Helpers } from '../../../helpers/Helpers';
 import './PostDetail.scss';
-import {
-    Container,
-    Divider,
-    Label,
-    Icon,
-    Modal,
-    Header
-} from 'semantic-ui-react';
+import { Container, Divider, Label, Icon } from 'semantic-ui-react';
 import MJ from 'react-mathjax-ts';
 import PostForm from '../PostForm';
 import { Link, navigate, globalHistory } from '@reach/router';
@@ -17,7 +10,8 @@ import LaLoader from '../../../shared/components/Loader';
 import { AppContext } from '../../../shared/contexts/Context';
 import { TagService } from '../../../services/Tag.service';
 import rake from 'rake-js';
-import { Typeahead } from '@gforge/react-typeahead-ts';
+
+import Unclear from '../Unclear';
 
 class PostDetail extends React.Component<any, any> {
     postService: PostService;
@@ -203,9 +197,9 @@ class PostDetail extends React.Component<any, any> {
                             </div>
                             <Container className="la-choice-actions">
                                 <div>
-                                    <Modal
-                                        size="tiny"
-                                        trigger={
+                                    <Unclear
+                                        keywords={this.state.keywords}
+                                        triggerButton={
                                             <Label
                                                 className="la-choice-actions__btn"
                                                 color="orange"
@@ -219,67 +213,7 @@ class PostDetail extends React.Component<any, any> {
                                                 <span>Unclear</span>
                                             </Label>
                                         }
-                                        centered={false}
-                                    >
-                                        <Modal.Header>
-                                            What do you find unclear?
-                                        </Modal.Header>
-                                        <Modal.Content>
-                                            <Modal.Description>
-                                                {this.state.keywords.length && (
-                                                    <Container>
-                                                        {/* <Input
-                                                            className="icon la-modal-search__box"
-                                                            icon="search"
-                                                            placeholder="Search..."
-                                                        /> */}
-
-                                                        <div className="ui icon input">
-                                                            {/* <i
-                                                                aria-hidden="true"
-                                                                className="search icon"
-                                                            ></i> */}
-                                                            <Typeahead
-                                                                placeholder="Search..."
-                                                                options={
-                                                                    this.state
-                                                                        .keywords
-                                                                }
-                                                                customClasses={{
-                                                                    input:
-                                                                        'la-modal-search__box'
-                                                                }}
-                                                                maxVisible={2}
-                                                            />
-                                                        </div>
-                                                        <Header>
-                                                            Here are the top
-                                                            keywords:
-                                                        </Header>
-                                                        <div className="la-modal-tags">
-                                                            {this.state.keywords.map(
-                                                                (
-                                                                    keyword,
-                                                                    index
-                                                                ) => (
-                                                                    <Label
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        className="la-modal-tags__tag"
-                                                                    >
-                                                                        {
-                                                                            keyword
-                                                                        }
-                                                                    </Label>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </Container>
-                                                )}
-                                            </Modal.Description>
-                                        </Modal.Content>
-                                    </Modal>
+                                    ></Unclear>
                                 </div>
                                 <div>
                                     <Label
