@@ -2,13 +2,22 @@ import * as React from 'react';
 import { PostService } from '../../../services/Post.service';
 import { Helpers } from '../../../helpers/Helpers';
 import './PostDetail.scss';
-import { Container, Divider, Label } from 'semantic-ui-react';
+import {
+    Container,
+    Divider,
+    Label,
+    Icon,
+    Modal,
+    Header
+} from 'semantic-ui-react';
 import MJ from 'react-mathjax-ts';
 import PostForm from '../PostForm';
 import { Link, navigate, globalHistory } from '@reach/router';
 import LaLoader from '../../../shared/components/Loader';
 import { AppContext } from '../../../shared/contexts/Context';
 import { TagService } from '../../../services/Tag.service';
+import rake from 'rake-js';
+import { Typeahead } from '@gforge/react-typeahead-ts';
 
 class PostDetail extends React.Component<any, any> {
     postService: PostService;
@@ -21,10 +30,12 @@ class PostDetail extends React.Component<any, any> {
         this.postService = new PostService();
         this.tagService = new TagService();
         this.loadTag = this.loadTag.bind(this);
+        this.onUnclear = this.onUnclear.bind(this);
     }
     static contextType = AppContext;
     state = {
-        post: {} as any
+        post: {} as any,
+        keywords: []
     };
 
     async componentDidMount() {
@@ -47,6 +58,25 @@ class PostDetail extends React.Component<any, any> {
 
     componentWillUnmount() {
         this.sub$();
+    }
+
+    onUnclear() {
+        const answer =
+            this.state.post?.answer?.body || this.state.post?.extract;
+        const rawText = Helpers.trimParagraphs(answer, false);
+        const keywords = rake(rawText);
+        // filter long phrases and short words
+        const keywordsFilter: string[] = (keywords || [])
+            .filter(
+                (keyword: string) =>
+                    keyword?.split(' ').length - 1 < 2 && keyword?.length > 3
+            )
+            .sort((x: string, y: string) => y?.length - x?.length);
+        const topKeywords = keywordsFilter.slice(0, 6);
+        this.setState({
+            keywords: topKeywords
+        });
+        console.log(keywordsFilter);
     }
 
     private async urlChanged() {
@@ -106,82 +136,188 @@ class PostDetail extends React.Component<any, any> {
         );
 
         return (
-            <Container>
-                {this.state.post.question || this.state.post.title ? (
-                    <div className="la-post-detail">
-                        <div className="la-post-detail-container">
-                            <div className="la-post-detail-question">
-                                <h3 className="la-post-detail-question__title">
-                                    {Helpers.trimParagraphs(
-                                        this.state.post?.question?.title ||
-                                            this.state.post?.title
-                                    )}
-                                </h3>
-                                <div className="la-post-detail-question__body">
-                                    {contentTransform(
-                                        this.state.post?.question?.body
-                                    )}
+            <React.Fragment>
+                <Container>
+                    {this.state.post.question || this.state.post.title ? (
+                        <Container>
+                            <div className="la-post-detail">
+                                <div className="la-post-detail-container">
+                                    <div className="la-post-detail-question">
+                                        <h3 className="la-post-detail-question__title">
+                                            {Helpers.trimParagraphs(
+                                                this.state.post?.question
+                                                    ?.title ||
+                                                    this.state.post?.title
+                                            )}
+                                        </h3>
+                                        <div className="la-post-detail-question__body">
+                                            {contentTransform(
+                                                this.state.post?.question?.body
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="la-post-detail-tags">
+                                        {(
+                                            (
+                                                this.state.post?.question
+                                                    ?.tags || ''
+                                            )
+                                                .replace(/</gi, '')
+                                                .split('>') || []
+                                        ).map((tag, index) => {
+                                            if (tag) {
+                                                return (
+                                                    <Label
+                                                        className="la-post-detail-tags__tag"
+                                                        key={index}
+                                                        onClick={() => {
+                                                            navigate(
+                                                                `/posts/${tag}`
+                                                            ).then(() => {
+                                                                this.loadTag(
+                                                                    tag
+                                                                );
+                                                            });
+                                                        }}
+                                                    >
+                                                        {tag}
+                                                    </Label>
+                                                );
+                                            }
+                                            return '';
+                                        })}
+                                    </div>
+                                    <Divider />
+                                    <h2>Answers</h2>
+                                    <ul className="la-post-detail-answers">
+                                        <li className="la-post-detail-answers__body">
+                                            {this.state.post?.answer?.body
+                                                ? contentTransform(
+                                                      this.state.post.answer
+                                                          .body
+                                                  )
+                                                : this.state.post?.extract}
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-                            <div className="la-post-detail-tags">
-                                {(
-                                    (this.state.post?.question?.tags || '')
-                                        .replace(/</gi, '')
-                                        .split('>') || []
-                                ).map((tag, index) => {
-                                    if (tag) {
-                                        return (
+                            <Container className="la-choice-actions">
+                                <div>
+                                    <Modal
+                                        size="tiny"
+                                        trigger={
                                             <Label
-                                                className="la-post-detail-tags__tag"
-                                                key={index}
-                                                onClick={() => {
-                                                    navigate(
-                                                        `/posts/${tag}`
-                                                    ).then(() => {
-                                                        this.loadTag(tag);
-                                                    });
-                                                }}
+                                                className="la-choice-actions__btn"
+                                                color="orange"
+                                                size="large"
+                                                onClick={this.onUnclear}
                                             >
-                                                {tag}
+                                                <Icon
+                                                    disabled
+                                                    name="angle double left"
+                                                />
+                                                <span>Unclear</span>
                                             </Label>
-                                        );
-                                    }
-                                    return '';
-                                })}
-                            </div>
-                            <Divider />
-                            <h2>Answers</h2>
-                            <ul className="la-post-detail-answers">
-                                <li className="la-post-detail-answers__body">
-                                    {this.state.post?.answer?.body
-                                        ? contentTransform(
-                                              this.state.post.answer.body
-                                          )
-                                        : this.state.post?.extract}
-                                </li>
-                            </ul>
+                                        }
+                                        centered={false}
+                                    >
+                                        <Modal.Header>
+                                            What do you find unclear?
+                                        </Modal.Header>
+                                        <Modal.Content>
+                                            <Modal.Description>
+                                                {this.state.keywords.length && (
+                                                    <Container>
+                                                        {/* <Input
+                                                            className="icon la-modal-search__box"
+                                                            icon="search"
+                                                            placeholder="Search..."
+                                                        /> */}
+
+                                                        <div className="ui icon input">
+                                                            {/* <i
+                                                                aria-hidden="true"
+                                                                className="search icon"
+                                                            ></i> */}
+                                                            <Typeahead
+                                                                placeholder="Search..."
+                                                                options={
+                                                                    this.state
+                                                                        .keywords
+                                                                }
+                                                                customClasses={{
+                                                                    input:
+                                                                        'la-modal-search__box'
+                                                                }}
+                                                                maxVisible={2}
+                                                            />
+                                                        </div>
+                                                        <Header>
+                                                            Here are the top
+                                                            keywords:
+                                                        </Header>
+                                                        <div className="la-modal-tags">
+                                                            {this.state.keywords.map(
+                                                                (
+                                                                    keyword,
+                                                                    index
+                                                                ) => (
+                                                                    <Label
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        className="la-modal-tags__tag"
+                                                                    >
+                                                                        {
+                                                                            keyword
+                                                                        }
+                                                                    </Label>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </Container>
+                                                )}
+                                            </Modal.Description>
+                                        </Modal.Content>
+                                    </Modal>
+                                </div>
+                                <div>
+                                    <Label
+                                        className="la-choice-actions__btn"
+                                        color="green"
+                                        size="large"
+                                    >
+                                        <span>Clear</span>
+                                        <Icon
+                                            className="la-choice-actions-icons__right"
+                                            disabled
+                                            name="angle double right"
+                                        />
+                                    </Label>
+                                </div>
+                            </Container>
+                        </Container>
+                    ) : (
+                        <div>
+                            <LaLoader />
+                        </div>
+                    )}
+                    <h2>Your Answer</h2>
+                    <div className="la-left--space">
+                        <div className="la-post-detail-answer-form">
+                            {!this.context.auth.loginUser ? (
+                                <Link className="no--link" to={'/auth'}>
+                                    <button className="ui primary button la-post-detail-answer-form__login-button">
+                                        Login to answer
+                                    </button>
+                                </Link>
+                            ) : (
+                                <PostForm></PostForm>
+                            )}
                         </div>
                     </div>
-                ) : (
-                    <div>
-                        <LaLoader />
-                    </div>
-                )}
-                <h2>Your Answer</h2>
-                <div className="la-left--space">
-                    <div className="la-post-detail-answer-form">
-                        {!this.context.auth.loginUser ? (
-                            <Link className="no--link" to={'/auth'}>
-                                <button className="ui primary button la-post-detail-answer-form__login-button">
-                                    Login to answer
-                                </button>
-                            </Link>
-                        ) : (
-                            <PostForm></PostForm>
-                        )}
-                    </div>
-                </div>
-            </Container>
+                </Container>
+            </React.Fragment>
         );
     }
 }
