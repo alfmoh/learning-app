@@ -16,7 +16,7 @@ class Auth extends Component<any> {
             const { path } = this.props.appPath;
             navigate(path.prev);
             this.props.onAuth();
-        }
+        } else navigate('/');
     }
     panes = [
         {

@@ -25,6 +25,10 @@ export class WebService<T> implements IWebService<T> {
         return axios.delete<T>(fullURL);
     }
 
+    getExternal(url: string): Promise<AxiosResponse<T>> {
+        return axios.get<T>(url);
+    }
+
     private constructFullURL(url: string) {
         return url ? this.URL + `/${url}` : this.URL;
     }

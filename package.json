@@ -16,6 +16,7 @@
     "axios": "^0.19.2",
     "formik": "^2.1.4",
     "jwt-decode": "^2.2.0",
+    "keyword-extractor": "^0.0.18",
     "node-sass": "^4.13.1",
     "react": "^16.13.0",
     "react-chips": "^0.8.0",

@@ -1,32 +1,75 @@
 import * as React from 'react';
 import { PostService } from '../../../services/Post.service';
-import { IQuestionAnswer } from '../../../models/IQuestionAnswer';
 import { Helpers } from '../../../helpers/Helpers';
 import './PostDetail.scss';
 import { Container, Divider, Label } from 'semantic-ui-react';
 import MJ from 'react-mathjax-ts';
 import PostForm from '../PostForm';
-import { Link } from '@reach/router';
+import { Link, navigate, globalHistory } from '@reach/router';
 import LaLoader from '../../../shared/components/Loader';
 import { AppContext } from '../../../shared/contexts/Context';
+import { TagService } from '../../../services/Tag.service';
 
 class PostDetail extends React.Component<any, any> {
+    postService: PostService;
+    tagService: TagService;
+    prevState = '';
+    safetyFlag = false;
+    sub$: any;
+    constructor(props) {
+        super(props);
+        this.postService = new PostService();
+        this.tagService = new TagService();
+        this.loadTag = this.loadTag.bind(this);
+    }
     static contextType = AppContext;
     state = {
-        post: {} as IQuestionAnswer
+        post: {} as any
     };
 
     async componentDidMount() {
-        const { appPath } = this.props;
-        console.log(appPath);
-        const postService = new PostService();
-
-        const { data } = await postService.getQuestionAndAnswer(this.props.id);
-        window.scrollTo(0, 0);
-
-        this.setState({
-            post: data as IQuestionAnswer
+        this.urlChanged();
+        this.sub$ = globalHistory.listen(({ action }) => {
+            if (action === 'POP') {
+                this.prevState = this.props.id;
+                this.safetyFlag = true;
+            }
         });
+    }
+
+    componentDidUpdate() {
+        if (this.prevState !== this.props.id && this.safetyFlag) {
+            this.urlChanged();
+            this.prevState = this.props.id;
+            this.safetyFlag = false;
+        }
+    }
+
+    componentWillUnmount() {
+        this.sub$();
+    }
+
+    private async urlChanged() {
+        if (+this.props.id) {
+            const { data } = await this.postService.getQuestionAndAnswer(
+                this.props.id
+            );
+            window.scrollTo(0, 0);
+            this.setState({
+                post: data as any
+            });
+        } else {
+            this.loadTag(this.props.id);
+        }
+    }
+
+    async loadTag(tag: any) {
+        const { data } = await this.tagService.get(tag);
+        const pageData = data?.query?.pages;
+        this.setState({
+            post: pageData[Object.keys(pageData)[0]]
+        });
+        window.scrollTo(0, 0);
     }
     public render() {
         const getContent = (text: string) => {
@@ -64,24 +107,25 @@ class PostDetail extends React.Component<any, any> {
 
         return (
             <Container>
-                {this.state.post.question ? (
+                {this.state.post.question || this.state.post.title ? (
                     <div className="la-post-detail">
                         <div className="la-post-detail-container">
                             <div className="la-post-detail-question">
                                 <h3 className="la-post-detail-question__title">
                                     {Helpers.trimParagraphs(
-                                        this.state.post.question.title
+                                        this.state.post?.question?.title ||
+                                            this.state.post?.title
                                     )}
                                 </h3>
                                 <div className="la-post-detail-question__body">
                                     {contentTransform(
-                                        this.state.post.question.body
+                                        this.state.post?.question?.body
                                     )}
                                 </div>
                             </div>
                             <div className="la-post-detail-tags">
                                 {(
-                                    (this.state.post.question.tags || '')
+                                    (this.state.post?.question?.tags || '')
                                         .replace(/</gi, '')
                                         .split('>') || []
                                 ).map((tag, index) => {
@@ -90,6 +134,13 @@ class PostDetail extends React.Component<any, any> {
                                             <Label
                                                 className="la-post-detail-tags__tag"
                                                 key={index}
+                                                onClick={() => {
+                                                    navigate(
+                                                        `/posts/${tag}`
+                                                    ).then(() => {
+                                                        this.loadTag(tag);
+                                                    });
+                                                }}
                                             >
                                                 {tag}
                                             </Label>
@@ -102,9 +153,11 @@ class PostDetail extends React.Component<any, any> {
                             <h2>Answers</h2>
                             <ul className="la-post-detail-answers">
                                 <li className="la-post-detail-answers__body">
-                                    {contentTransform(
-                                        this.state.post.answer.body
-                                    )}
+                                    {this.state.post?.answer?.body
+                                        ? contentTransform(
+                                              this.state.post.answer.body
+                                          )
+                                        : this.state.post?.extract}
                                 </li>
                             </ul>
                         </div>

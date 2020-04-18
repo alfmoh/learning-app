@@ -53,7 +53,7 @@ class Nav extends React.Component<any, any> {
                                         Login
                                     </Button>
                                 ) : (
-                                    <Dropdown icon="user">
+                                    <Dropdown icon="user" className="link item">
                                         <Dropdown.Menu>
                                             <Dropdown.Item text="My Profile" />
                                             <Dropdown.Item
