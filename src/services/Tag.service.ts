@@ -10,6 +10,8 @@ export class TagService extends WebService<any> {
     }
 
     private deleteHyphen(str: string) {
-        return str.split('-').join('_');
+        const delimeters = ['%20', ' '];
+        let delimeter = delimeters.find(deli => str.includes(deli));
+        return str.split(delimeter).join('_');
     }
 }

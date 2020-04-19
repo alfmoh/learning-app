@@ -25,11 +25,14 @@ class PostDetail extends React.Component<any, any> {
         this.tagService = new TagService();
         this.loadTag = this.loadTag.bind(this);
         this.onUnclear = this.onUnclear.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
+        this.onSafetyFlag = this.onSafetyFlag.bind(this);
     }
     static contextType = AppContext;
     state = {
         post: {} as any,
-        keywords: []
+        keywords: [],
+        showModal: false
     };
 
     async componentDidMount() {
@@ -37,7 +40,7 @@ class PostDetail extends React.Component<any, any> {
         this.sub$ = globalHistory.listen(({ action }) => {
             if (action === 'POP') {
                 this.prevState = this.props.id;
-                this.safetyFlag = true;
+                this.onSafetyFlag();
             }
         });
     }
@@ -66,15 +69,30 @@ class PostDetail extends React.Component<any, any> {
                     keyword?.split(' ').length - 1 < 2 && keyword?.length > 3
             )
             .sort((x: string, y: string) => y?.length - x?.length);
-        const topKeywords = keywordsFilter.slice(0, 6);
+        const topKeywords = keywordsFilter.slice();
+        this.setState(
+            {
+                keywords: topKeywords
+            },
+            () => {
+                this.toggleModal(true);
+            }
+        );
+        // console.log(keywordsFilter);
+    }
+
+    toggleModal(showModal: boolean) {
         this.setState({
-            keywords: topKeywords
+            showModal
         });
-        console.log(keywordsFilter);
+    }
+
+    onSafetyFlag() {
+        this.safetyFlag = true;
     }
 
     private async urlChanged() {
-        if (+this.props.id) {
+        if (+this.props?.id) {
             const { data } = await this.postService.getQuestionAndAnswer(
                 this.props.id
             );
@@ -199,6 +217,9 @@ class PostDetail extends React.Component<any, any> {
                                 <div>
                                     <Unclear
                                         keywords={this.state.keywords}
+                                        keywordSearch={this.onSafetyFlag}
+                                        showModal={this.state.showModal}
+                                        toggleModal={this.toggleModal}
                                         triggerButton={
                                             <Label
                                                 className="la-choice-actions__btn"
