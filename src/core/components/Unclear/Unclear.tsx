@@ -47,6 +47,14 @@ class Unclear extends React.Component<any, any> {
                             <Container>
                                 <div className="ui icon fluid input">
                                     <Typeahead
+                                        onKeyUp={event => {
+                                            if (event.key === 'Enter') {
+                                                this.getInputValue(
+                                                    true,
+                                                    this.inputValueRef
+                                                );
+                                            }
+                                        }}
                                         onChange={val =>
                                             this.getInputValue(
                                                 false,

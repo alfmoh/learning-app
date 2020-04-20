@@ -68,6 +68,7 @@ class PostDetail extends React.Component<any, any> {
                 (keyword: string) =>
                     keyword?.split(' ').length - 1 < 2 && keyword?.length > 3
             )
+            .map((keyword: string) => keyword.replace(/^'+|'+$/g, ''))
             .sort((x: string, y: string) => y?.length - x?.length);
         const topKeywords = keywordsFilter.slice();
         this.setState(
@@ -106,8 +107,42 @@ class PostDetail extends React.Component<any, any> {
     }
 
     async loadTag(tag: any) {
+        const filteredWords = [
+            'articles',
+            'sources (',
+            'wikipedia',
+            'authors',
+            'cs1',
+            'disambiguation',
+            'article',
+            'dates',
+            'webarchive template',
+            'accuracy disputes',
+            'pages needing',
+            'maint',
+            'wikidata',
+            'npov disputes',
+            '802',
+            'commons category',
+            'burial sites of the house',
+            'births',
+            'deaths',
+            'ac with'
+        ];
         const { data } = await this.tagService.get(tag);
         const pageData = data?.query?.pages;
+        const categories: string[] = (
+            pageData[Object.keys(pageData)[0]]?.categories || [{}]
+        ).map(x => x.title);
+        const filteredCats = categories
+            .filter(
+                cat =>
+                    !filteredWords.find(fW =>
+                        cat?.toLocaleLowerCase()?.includes(fW)
+                    ) && cat?.length < 35
+            )
+            .filter(x => Boolean(x));
+        console.log(filteredCats);
         this.setState({
             post: pageData[Object.keys(pageData)[0]]
         });

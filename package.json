@@ -17,6 +17,7 @@
     "axios": "^0.19.2",
     "formik": "^2.1.4",
     "jwt-decode": "^2.2.0",
+    "neo4j-driver": "^4.0.2",
     "node-sass": "^4.13.1",
     "rake-js": "^0.1.1",
     "react": "^16.13.0",
