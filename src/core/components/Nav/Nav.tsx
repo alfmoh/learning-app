@@ -3,10 +3,20 @@ import { Menu, Input, Button, Dropdown, Container } from 'semantic-ui-react';
 import './Nav.scss';
 import { Link, navigate } from '@reach/router';
 import { AppContext } from '../../../shared/contexts/Context';
+import { AuthService } from '../../../services/Auth.service';
 
 class Nav extends React.Component<any, any> {
     static contextType = AppContext;
-    state = {};
+    state = {
+        user: null
+    };
+
+    componentDidMount() {
+        const authService = new AuthService();
+        this.setState({
+            user: authService.getUser()
+        });
+    }
 
     public render() {
         return (
@@ -55,7 +65,14 @@ class Nav extends React.Component<any, any> {
                                 ) : (
                                     <Dropdown icon="user" className="link item">
                                         <Dropdown.Menu>
-                                            <Dropdown.Item text="My Profile" />
+                                            <Link
+                                                to={
+                                                    'user/' +
+                                                    this.state.user?.nameid
+                                                }
+                                            >
+                                                <Dropdown.Item text="My Profile" />
+                                            </Link>
                                             <Dropdown.Item
                                                 text="Logout"
                                                 onClick={() => {

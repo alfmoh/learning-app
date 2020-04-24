@@ -13,14 +13,12 @@ export class Neo4jService extends WebService<any> {
         this.session = this.driver.session();
     }
 
-    getSample() {
-        this.session
+    getGraphData() {
+        return this.session
             .run(
                 `MATCH (a:Category {name:'Concepts in physics'})-[r]-(b) RETURN r, a, b`
             )
             .then((queryResult: QueryResult) => {
-                console.log(queryResult.records);
-
                 const nestedNodes = this.getNodes(queryResult);
                 // const relationships = this.getRelationships(result);
                 const nodes = this.flatten(nestedNodes);
@@ -32,8 +30,8 @@ export class Neo4jService extends WebService<any> {
                         targetNode: nodeSet[1]
                     };
                 });
-                console.log({ nodes, links });
                 this.session.close();
+                return { nodes, links };
             })
             .catch(console.log);
     }

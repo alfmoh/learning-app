@@ -4,9 +4,10 @@ import jwt_decode from 'jwt-decode';
 export class AuthService extends WebService<User> {
     URL = 'auth';
     loginUser: LoginUser;
+    token = '';
     constructor() {
         super();
-        this.loginUser = this.getUser(this.getToken());
+        this.loginUser = this.getUser();
     }
     login(data: User) {
         return this.post<any>(data, 'login').then(({ data }) => {
@@ -26,11 +27,12 @@ export class AuthService extends WebService<User> {
     }
 
     isLoggedIn() {
-        const user = this.getUser(this.getToken());
+        const user = this.getUser();
         return Date.now() <= user?.exp * 1000;
     }
 
-    private getUser(token: string): LoginUser {
+    getUser(): LoginUser {
+        const token = this.getToken();
         if (token) {
             return jwt_decode(token);
         }
@@ -38,9 +40,9 @@ export class AuthService extends WebService<User> {
     }
 
     private loginSuccess(data: any) {
-        const token = data.tokenString;
-        this.setToken(token);
-        return this.getUser(token);
+        this.token = data.tokenString;
+        this.setToken(this.token);
+        return this.getUser();
     }
 
     private setToken(token: any) {

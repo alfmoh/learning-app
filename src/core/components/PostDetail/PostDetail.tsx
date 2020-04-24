@@ -188,7 +188,7 @@ class PostDetail extends React.Component<any, any> {
                     {this.state.post.question || this.state.post.title ? (
                         <Container>
                             <div className="la-post-detail">
-                                <div className="la-post-detail-container">
+                                <div className="la-post-detail-container content--background">
                                     <div className="la-post-detail-question">
                                         <h3 className="la-post-detail-question__title">
                                             {Helpers.trimParagraphs(
