@@ -94,7 +94,7 @@ class Unclear extends React.Component<any, any> {
                                         Search
                                     </Button>
                                 </div>
-                                <Header>Top keywords:</Header>
+                                <Header>Keywords:</Header>
                                 <div className="la-unclear-modal-tags">
                                     {this.props.keywords.map(
                                         (keyword: string, index: number) => (

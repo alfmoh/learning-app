@@ -9,11 +9,14 @@ import Question from '../Question';
 import Auth from '../Auth';
 import { AuthService } from '../../../services/Auth.service';
 import { AppContext, LocationContext } from '../../../shared/contexts/Context';
+import { Neo4jService } from './../../../services/Neo4j.service';
 
 export class App extends React.Component {
     constructor(props: any) {
         super(props);
         this.triggerUpdate = this.triggerUpdate.bind(this);
+        const neo4jService = new Neo4jService();
+        neo4jService.getSample();
     }
     triggerUpdate() {
         this.forceUpdate();
