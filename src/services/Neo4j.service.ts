@@ -1,4 +1,4 @@
-import neo4j, { Driver, Session, QueryResult, Node } from 'neo4j-driver';
+import neo4j, { Driver, Session, QueryResult } from 'neo4j-driver';
 import { WebService } from './Web.service';
 
 export class Neo4jService extends WebService<any> {
@@ -16,9 +16,11 @@ export class Neo4jService extends WebService<any> {
     getGraphData() {
         return this.session
             .run(
-                `MATCH (a:Category {name:'Concepts in physics'})-[r]-(b) RETURN r, a, b`
+                // `MATCH (a:Category {name:'Concepts in physics'})-[r]-(b) RETURN r, a, b`
+                `MATCH (n)-[r]->(m) RETURN n,r,m`
             )
             .then((queryResult: QueryResult) => {
+                console.log(queryResult);
                 const nestedNodes = this.getNodes(queryResult);
                 // const relationships = this.getRelationships(result);
                 const nodes = this.flatten(nestedNodes);

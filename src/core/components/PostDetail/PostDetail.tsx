@@ -12,15 +12,19 @@ import { TagService } from '../../../services/Tag.service';
 import rake from 'rake-js';
 
 import Unclear from '../Unclear';
+import Unspecfic from '../Unspecfic';
 
+export let PostDetailInstance = null;
 class PostDetail extends React.Component<any, any> {
     postService: PostService;
     tagService: TagService;
     prevState = '';
     safetyFlag = false;
     sub$: any;
-    constructor(props) {
+    constructor(props: any) {
         super(props);
+        PostDetailInstance = this;
+
         this.postService = new PostService();
         this.tagService = new TagService();
         this.loadTag = this.loadTag.bind(this);
@@ -32,7 +36,8 @@ class PostDetail extends React.Component<any, any> {
     state = {
         post: {} as any,
         keywords: [],
-        showModal: false
+        showModal: false,
+        searchData: []
     };
 
     async componentDidMount() {
@@ -60,20 +65,14 @@ class PostDetail extends React.Component<any, any> {
     onUnclear() {
         const answer =
             this.state.post?.answer?.body || this.state.post?.extract;
-        const rawText = Helpers.trimParagraphs(answer, false);
+        const rawText = Helpers.convertHTML(answer);
         const keywords = rake(rawText);
-        // filter long phrases and short words
-        const keywordsFilter: string[] = (keywords || [])
-            .filter(
-                (keyword: string) =>
-                    keyword?.split(' ').length - 1 < 2 && keyword?.length > 3
-            )
-            .map((keyword: string) => keyword.replace(/^'+|'+$/g, ''))
-            .sort((x: string, y: string) => y?.length - x?.length);
-        const topKeywords = keywordsFilter.slice();
+
+        const keyWordsNoDup = this.processKeywords(keywords);
+
         this.setState(
             {
-                keywords: topKeywords
+                keywords: keyWordsNoDup
             },
             () => {
                 this.toggleModal(true);
@@ -92,21 +91,46 @@ class PostDetail extends React.Component<any, any> {
         this.safetyFlag = true;
     }
 
-    private async urlChanged() {
-        if (+this.props?.id) {
-            const { data } = await this.postService.getQuestionAndAnswer(
-                this.props.id
-            );
-            window.scrollTo(0, 0);
-            this.setState({
-                post: data as any
-            });
-        } else {
-            this.loadTag(this.props.id);
-        }
+    async loadTag(tag: any) {
+        const { data } = await this.tagService.get(tag);
+        const pageData = data?.query?.pages;
+
+        const filteredCats = this.processCategories(pageData);
+
+        console.log(filteredCats);
+        this.setState({
+            post: pageData[Object.keys(pageData)[0]],
+            searchData: data?.query?.search
+        });
+        window.scrollTo(0, 0);
     }
 
-    async loadTag(tag: any) {
+    private processKeywords(keywords) {
+        // filter long phrases and short words
+        const keywordsFilter: string[] = (keywords || [])
+            .filter(
+                (keyword: string) =>
+                    keyword?.split(' ').length - 1 < 2 && keyword?.length > 3
+            )
+            .map((keyword: string) => keyword.trim().replace(/^'+|'+$/g, ''))
+            .sort((x: string, y: string) => y?.length - x?.length);
+        // const topKeywords = keywordsFilter.slice();
+
+        // returning single keywords instead of phrases
+        const topKeywords: string[] = [].concat.apply(
+            [],
+            keywordsFilter.map(word => word.trim().split(' '))
+        );
+
+        // removing duplicates
+        const keyWordsNoDup = topKeywords.filter(
+            (word, index) =>
+                topKeywords.indexOf(word.replace(/^'+|'+$/g, '')) === index
+        );
+        return keyWordsNoDup;
+    }
+
+    private processCategories(pageData) {
         const filteredWords = [
             'articles',
             'sources (',
@@ -129,11 +153,11 @@ class PostDetail extends React.Component<any, any> {
             'deaths',
             'ac with'
         ];
-        const { data } = await this.tagService.get(tag);
-        const pageData = data?.query?.pages;
+
         const categories: string[] = (
             pageData[Object.keys(pageData)[0]]?.categories || [{}]
         ).map(x => x.title);
+
         const filteredCats = categories
             .filter(
                 cat =>
@@ -142,12 +166,29 @@ class PostDetail extends React.Component<any, any> {
                     ) && cat?.length < 35
             )
             .filter(x => Boolean(x));
-        console.log(filteredCats);
-        this.setState({
-            post: pageData[Object.keys(pageData)[0]]
-        });
-        window.scrollTo(0, 0);
+        return filteredCats;
     }
+
+    private async urlChanged() {
+        if (+this.props?.id) {
+            const { data } = await this.postService.getQuestionAndAnswer(
+                this.props.id
+            );
+            window.scrollTo(0, 0);
+            this.setState({
+                post: data as any
+            });
+        } else {
+            let searchWord: string = this.props.id.toLocaleLowerCase();
+            if (searchWord.includes('concepts in'))
+                searchWord = searchWord
+                    .toLocaleLowerCase()
+                    .replace('concepts in', '')
+                    .trim();
+            this.loadTag(searchWord);
+        }
+    }
+
     public render() {
         const getContent = (text: string) => {
             const div = document.createElement('div');
@@ -238,12 +279,23 @@ class PostDetail extends React.Component<any, any> {
                                     <h2>Answers</h2>
                                     <ul className="la-post-detail-answers">
                                         <li className="la-post-detail-answers__body">
-                                            {this.state.post?.answer?.body
-                                                ? contentTransform(
-                                                      this.state.post.answer
-                                                          .body
-                                                  )
-                                                : this.state.post?.extract}
+                                            {this.state.post?.answer?.body ? (
+                                                contentTransform(
+                                                    this.state.post.answer.body
+                                                )
+                                            ) : (this.state.post
+                                                  ?.extract as string)
+                                                  ?.toLocaleLowerCase()
+                                                  ?.endsWith(
+                                                      'may refer to:'
+                                                  ) ? (
+                                                <Unspecfic
+                                                    post={this.state.searchData}
+                                                    loadTitle={this.loadTag}
+                                                />
+                                            ) : (
+                                                this.state.post?.extract
+                                            )}
                                         </li>
                                     </ul>
                                 </div>

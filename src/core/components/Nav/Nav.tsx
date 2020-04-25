@@ -4,12 +4,21 @@ import './Nav.scss';
 import { Link, navigate } from '@reach/router';
 import { AppContext } from '../../../shared/contexts/Context';
 import { AuthService } from '../../../services/Auth.service';
+import { PostDetailInstance } from '../PostDetail';
 
 class Nav extends React.Component<any, any> {
     static contextType = AppContext;
+    constructor(props: any) {
+        super(props);
+        this.searchKeyword = this.searchKeyword.bind(this);
+    }
     state = {
         user: null
     };
+
+    searchKeyword(text: string) {
+        PostDetailInstance.loadTag(text);
+    }
 
     componentDidMount() {
         const authService = new AuthService();
@@ -31,6 +40,27 @@ class Nav extends React.Component<any, any> {
                                 className="icon"
                                 icon="search"
                                 placeholder="Search..."
+                                onKeyDown={(e: any) => {
+                                    let searchWord: string = e.target.value;
+                                    if (
+                                        e.keyCode === 13 &&
+                                        searchWord.trim().length > 2
+                                    ) {
+                                        navigate(`/posts/${searchWord}`).then(
+                                            () => {
+                                                if (
+                                                    window.location.pathname.includes(
+                                                        'posts/'
+                                                    )
+                                                ) {
+                                                    this.searchKeyword(
+                                                        searchWord
+                                                    );
+                                                }
+                                            }
+                                        );
+                                    }
+                                }}
                             />
                         </Menu.Item>
                         <Menu.Item>

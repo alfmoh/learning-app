@@ -43,7 +43,7 @@ class Unclear extends React.Component<any, any> {
                 <Modal.Header>What do you find unclear?</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
-                        {this.props.keywords.length && (
+                        {
                             <Container>
                                 <div className="ui icon fluid input">
                                     <Typeahead
@@ -94,29 +94,40 @@ class Unclear extends React.Component<any, any> {
                                         Search
                                     </Button>
                                 </div>
-                                <Header>Keywords:</Header>
+                                {this.props.keywords.length ? (
+                                    <Header>Keywords:</Header>
+                                ) : (
+                                    ''
+                                )}
                                 <div className="la-unclear-modal-tags">
-                                    {this.props.keywords.map(
-                                        (keyword: string, index: number) => (
-                                            <Label
-                                                key={index}
-                                                className="la-unclear-modal-tags__tag"
-                                                onClick={_ => {
-                                                    this.setState(
-                                                        {
-                                                            keyword
-                                                        },
-                                                        this.onSearch
-                                                    );
-                                                }}
-                                            >
-                                                {keyword}
-                                            </Label>
+                                    {this.props.keywords.length ? (
+                                        this.props.keywords.map(
+                                            (
+                                                keyword: string,
+                                                index: number
+                                            ) => (
+                                                <Label
+                                                    key={index}
+                                                    className="la-unclear-modal-tags__tag"
+                                                    onClick={_ => {
+                                                        this.setState(
+                                                            {
+                                                                keyword
+                                                            },
+                                                            this.onSearch
+                                                        );
+                                                    }}
+                                                >
+                                                    {keyword}
+                                                </Label>
+                                            )
                                         )
+                                    ) : (
+                                        <h5>Unable to find keywords</h5>
                                     )}
                                 </div>
                             </Container>
-                        )}
+                        }
                     </Modal.Description>
                 </Modal.Content>
             </Modal>

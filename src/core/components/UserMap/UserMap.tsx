@@ -16,7 +16,8 @@ class UserMap extends React.Component<any, any> {
         },
         link: {
             highlightColor: 'lightblue'
-        }
+        },
+        directed: true
     };
     componentDidMount() {
         const neo4jService = new Neo4jService();
@@ -24,17 +25,19 @@ class UserMap extends React.Component<any, any> {
             this.setState({
                 data
             });
-            // console.log(data);
         });
     }
     public render() {
         return (
             <div>
-                {Object.keys(this.state.data).length ? (
+                {Object.keys(this.state?.data).length ? (
                     <Graph
                         id="graph-id"
                         data={this.state.data}
                         config={this.graphConfig}
+                        onClickNode={(...node) => {
+                            console.log(node);
+                        }}
                     />
                 ) : (
                     <LaLoader />

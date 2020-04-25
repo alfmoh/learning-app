@@ -22,7 +22,7 @@ class User extends React.Component<any, any> {
         return (
             <Container>
                 <div className="la-user-container">
-                    <Card>
+                    <Card className="la-user-side-menu">
                         <CardContent>
                             <List selection verticalAlign="middle">
                                 <List.Item

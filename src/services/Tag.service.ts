@@ -6,7 +6,11 @@ export class TagService extends WebService<any> {
         'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts|categories&exintro=&explaintext&redirects=1&origin=*&titles=';
 
     get(tag: string): Promise<AxiosResponse<any>> {
-        return super.getExternal(this.url + this.deleteHyphen(tag));
+        return super.getExternal(
+            this.url +
+                this.deleteHyphen(tag) +
+                `&list=search&srsearch=${this.deleteHyphen(tag)}&srwhat=text`
+        );
     }
 
     private deleteHyphen(str: string) {
