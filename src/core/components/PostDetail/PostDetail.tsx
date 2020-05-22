@@ -21,6 +21,7 @@ class PostDetail extends React.Component<any, any> {
     prevState = '';
     safetyFlag = false;
     sub$: any;
+    votesRef: React.RefObject<any>;
     constructor(props: any) {
         super(props);
         PostDetailInstance = this;
@@ -31,6 +32,7 @@ class PostDetail extends React.Component<any, any> {
         this.onUnclear = this.onUnclear.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.onSafetyFlag = this.onSafetyFlag.bind(this);
+        this.votesRef = React.createRef();
     }
     static contextType = AppContext;
     state = {
@@ -278,24 +280,62 @@ class PostDetail extends React.Component<any, any> {
                                     <Divider />
                                     <h2>Answers</h2>
                                     <ul className="la-post-detail-answers">
-                                        <li className="la-post-detail-answers__body">
-                                            {this.state.post?.answer?.body ? (
-                                                contentTransform(
-                                                    this.state.post.answer.body
-                                                )
-                                            ) : (this.state.post
-                                                  ?.extract as string)
-                                                  ?.toLocaleLowerCase()
-                                                  ?.endsWith(
-                                                      'may refer to:'
-                                                  ) ? (
-                                                <Unspecfic
-                                                    post={this.state.searchData}
-                                                    loadTitle={this.loadTag}
+                                        <li className="la-post-detail-answers-body">
+                                            <span
+                                                ref={this.votesRef}
+                                                className="la-post-detail-answers-body-votes"
+                                            >
+                                                <Icon
+                                                    onClick={() =>
+                                                        this.scoreUpdate(
+                                                            'upvote'
+                                                        )
+                                                    }
+                                                    name="sort up"
+                                                    size="huge"
+                                                    className="la-post-detail-answers-body-votes__upvote vote--button"
                                                 />
-                                            ) : (
-                                                this.state.post?.extract
-                                            )}
+                                                <div className="la-post-detail-answers-body-votes__num">
+                                                    {
+                                                        ~~this.state.post
+                                                            ?.answer?.score
+                                                    }
+                                                </div>
+                                                <Icon
+                                                    onClick={() =>
+                                                        this.scoreUpdate(
+                                                            'downvote'
+                                                        )
+                                                    }
+                                                    name="sort down"
+                                                    size="huge"
+                                                    className="la-post-detail-answers-body-votes__downvote vote--button"
+                                                />
+                                            </span>
+                                            <span>
+                                                {this.state.post?.answer
+                                                    ?.body ? (
+                                                    contentTransform(
+                                                        this.state.post.answer
+                                                            .body
+                                                    )
+                                                ) : (this.state.post
+                                                      ?.extract as string)
+                                                      ?.toLocaleLowerCase()
+                                                      ?.endsWith(
+                                                          'may refer to:'
+                                                      ) ? (
+                                                    <Unspecfic
+                                                        post={
+                                                            this.state
+                                                                .searchData
+                                                        }
+                                                        loadTitle={this.loadTag}
+                                                    />
+                                                ) : (
+                                                    this.state.post?.extract
+                                                )}
+                                            </span>
                                         </li>
                                     </ul>
                                 </div>
@@ -361,6 +401,40 @@ class PostDetail extends React.Component<any, any> {
                 </Container>
             </React.Fragment>
         );
+    }
+
+    private scoreUpdate(buttonType: string) {
+        const clickedButton = Array.from(
+            this.votesRef.current.children
+        ).filter((child: any) =>
+            child.className.includes(buttonType)
+        )[0] as HTMLElement;
+        const otherButton = Array.from(
+            this.votesRef.current.children
+        ).filter((child: any) =>
+            child.className.includes(
+                buttonType === 'upvote' ? 'downvote' : 'upvote'
+            )
+        )[0] as HTMLElement;
+        const scoreVal = this.state.post?.answer?.score;
+        if (!clickedButton.className.includes('disabled')) {
+            this.setState((prevState: any) => ({
+                post: {
+                    ...prevState.post,
+                    answer: {
+                        ...prevState.post.answer,
+                        score:
+                            buttonType === 'upvote'
+                                ? ~~scoreVal + 1
+                                : ~~scoreVal - 1
+                    }
+                }
+            }));
+            clickedButton.classList.add('disabled');
+            clickedButton.setAttribute('aria-disabled', 'true');
+            otherButton.classList.remove('disabled');
+            otherButton.setAttribute('aria-disabled', 'false');
+        }
     }
 }
 
