@@ -2,10 +2,12 @@ import * as React from 'react';
 import { Graph } from 'react-d3-graph';
 import { Neo4jService } from '../../../services/Neo4j.service';
 import LaLoader from '../../../shared/components/Loader';
+import UserNote from '../UserNote';
 
 class UserMap extends React.Component<any, any> {
     state = {
-        data: {}
+        data: {},
+        node: ''
     };
     graphConfig = {
         nodeHighlightBehavior: true,
@@ -31,14 +33,19 @@ class UserMap extends React.Component<any, any> {
         return (
             <div>
                 {Object.keys(this.state?.data).length ? (
-                    <Graph
-                        id="graph-id"
-                        data={this.state.data}
-                        config={this.graphConfig}
-                        onClickNode={(...node) => {
-                            console.log(node);
-                        }}
-                    />
+                    <React.Fragment>
+                        <div className="content--background">
+                            <Graph
+                                id="graph-id"
+                                data={this.state.data}
+                                config={this.graphConfig}
+                                onClickNode={(node: any) => {
+                                    this.setState({ node });
+                                }}
+                            />
+                        </div>
+                        {this.state.node && <UserNote node={this.state.node} />}
+                    </React.Fragment>
                 ) : (
                     <LaLoader />
                 )}

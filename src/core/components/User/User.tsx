@@ -5,17 +5,17 @@ import UserMap from '../UserMap';
 
 class User extends React.Component<any, any> {
     state = {
-        activeTab: 'history'
+        activeTab: 'map'
     };
     switchContent() {
         switch (this.state.activeTab) {
             case 'history':
             default:
-                return <div>History</div>;
+                return <div className="content--background">History</div>;
             case 'map':
                 return <UserMap />;
             case 'settings':
-                return <div>Settings</div>;
+                return <div className="content--background">Settings</div>;
         }
     }
     public render() {
@@ -61,7 +61,7 @@ class User extends React.Component<any, any> {
                             </List>
                         </CardContent>
                     </Card>
-                    <div className="la-user-content content--background">
+                    <div className="la-user-content">
                         {this.switchContent()}
                     </div>
                 </div>

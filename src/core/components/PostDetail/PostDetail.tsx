@@ -13,6 +13,7 @@ import rake from 'rake-js';
 
 import Unclear from '../Unclear';
 import Unspecfic from '../Unspecfic';
+import { IPost } from '../../../models/IPost';
 
 export let PostDetailInstance = null;
 class PostDetail extends React.Component<any, any> {
@@ -101,7 +102,10 @@ class PostDetail extends React.Component<any, any> {
 
         console.log(filteredCats);
         this.setState({
-            post: pageData[Object.keys(pageData)[0]],
+            post: {
+                answers: [pageData[Object.keys(pageData)[0]]],
+                title: pageData[Object.keys(pageData)[0]].title
+            },
             searchData: data?.query?.search
         });
         window.scrollTo(0, 0);
@@ -280,63 +284,81 @@ class PostDetail extends React.Component<any, any> {
                                     <Divider />
                                     <h2>Answers</h2>
                                     <ul className="la-post-detail-answers">
-                                        <li className="la-post-detail-answers-body">
-                                            <span
-                                                ref={this.votesRef}
-                                                className="la-post-detail-answers-body-votes"
-                                            >
-                                                <Icon
-                                                    onClick={() =>
-                                                        this.scoreUpdate(
-                                                            'upvote'
-                                                        )
-                                                    }
-                                                    name="sort up"
-                                                    size="huge"
-                                                    className="la-post-detail-answers-body-votes__upvote vote--button"
-                                                />
-                                                <div className="la-post-detail-answers-body-votes__num">
-                                                    {
-                                                        ~~this.state.post
-                                                            ?.answer?.score
-                                                    }
-                                                </div>
-                                                <Icon
-                                                    onClick={() =>
-                                                        this.scoreUpdate(
-                                                            'downvote'
-                                                        )
-                                                    }
-                                                    name="sort down"
-                                                    size="huge"
-                                                    className="la-post-detail-answers-body-votes__downvote vote--button"
-                                                />
-                                            </span>
-                                            <span>
-                                                {this.state.post?.answer
-                                                    ?.body ? (
-                                                    contentTransform(
-                                                        this.state.post.answer
-                                                            .body
-                                                    )
-                                                ) : (this.state.post
-                                                      ?.extract as string)
-                                                      ?.toLocaleLowerCase()
-                                                      ?.endsWith(
-                                                          'may refer to:'
-                                                      ) ? (
-                                                    <Unspecfic
-                                                        post={
-                                                            this.state
-                                                                .searchData
-                                                        }
-                                                        loadTitle={this.loadTag}
-                                                    />
-                                                ) : (
-                                                    this.state.post?.extract
-                                                )}
-                                            </span>
-                                        </li>
+                                        {this.state.post?.answers.map(
+                                            (
+                                                answer: IPost | any,
+                                                index: number
+                                            ) => (
+                                                <React.Fragment key={index}>
+                                                    <li className="la-post-detail-answers-body">
+                                                        <span
+                                                            ref={this.votesRef}
+                                                            className="la-post-detail-answers-body-votes"
+                                                        >
+                                                            <Icon
+                                                                onClick={(
+                                                                    event: any
+                                                                ) =>
+                                                                    this.scoreUpdate(
+                                                                        'upvote',
+                                                                        answer,
+                                                                        event.target
+                                                                    )
+                                                                }
+                                                                name="sort up"
+                                                                size="huge"
+                                                                className="la-post-detail-answers-body-votes__upvote vote--button"
+                                                            />
+                                                            <div className="la-post-detail-answers-body-votes__num">
+                                                                {
+                                                                    ~~answer?.score
+                                                                }
+                                                            </div>
+                                                            <Icon
+                                                                onClick={(
+                                                                    event: any
+                                                                ) =>
+                                                                    this.scoreUpdate(
+                                                                        'downvote',
+                                                                        answer,
+                                                                        event.target
+                                                                    )
+                                                                }
+                                                                name="sort down"
+                                                                size="huge"
+                                                                className="la-post-detail-answers-body-votes__downvote vote--button"
+                                                            />
+                                                        </span>
+                                                        <span>
+                                                            {answer?.body ? (
+                                                                contentTransform(
+                                                                    answer.body
+                                                                )
+                                                            ) : (answer?.extract as string)
+                                                                  ?.toLocaleLowerCase()
+                                                                  ?.endsWith(
+                                                                      'may refer to:'
+                                                                  ) ? (
+                                                                <Unspecfic
+                                                                    post={
+                                                                        this
+                                                                            .state
+                                                                            .searchData
+                                                                    }
+                                                                    loadTitle={
+                                                                        this
+                                                                            .loadTag
+                                                                    }
+                                                                />
+                                                            ) : (
+                                                                answer?.extract
+                                                            )}
+                                                        </span>
+                                                    </li>
+                                                    <Divider />
+                                                </React.Fragment>
+                                            )
+                                        )}
                                     </ul>
                                 </div>
                             </div>
@@ -403,31 +425,37 @@ class PostDetail extends React.Component<any, any> {
         );
     }
 
-    private scoreUpdate(buttonType: string) {
+    private scoreUpdate(
+        buttonType: string,
+        answer: IPost,
+        target: HTMLElement
+    ) {
         const clickedButton = Array.from(
-            this.votesRef.current.children
+            target.parentElement.children
         ).filter((child: any) =>
             child.className.includes(buttonType)
         )[0] as HTMLElement;
         const otherButton = Array.from(
-            this.votesRef.current.children
+            target.parentElement.children
         ).filter((child: any) =>
             child.className.includes(
                 buttonType === 'upvote' ? 'downvote' : 'upvote'
             )
         )[0] as HTMLElement;
-        const scoreVal = this.state.post?.answer?.score;
         if (!clickedButton.className.includes('disabled')) {
             this.setState((prevState: any) => ({
                 post: {
                     ...prevState.post,
-                    answer: {
-                        ...prevState.post.answer,
-                        score:
-                            buttonType === 'upvote'
-                                ? ~~scoreVal + 1
-                                : ~~scoreVal - 1
-                    }
+                    answers: [...prevState.post.answers].map((ans: IPost) => {
+                        if (answer.id === ans.id && buttonType === 'upvote') {
+                            ans.score = ~~ans.score + 1;
+                        }
+
+                        if (answer.id === ans.id && buttonType === 'downvote') {
+                            ans.score = ~~ans.score - 1;
+                        }
+                        return ans;
+                    })
                 }
             }));
             clickedButton.classList.add('disabled');
