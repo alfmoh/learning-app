@@ -14,6 +14,7 @@ import rake from 'rake-js';
 import Unclear from '../Unclear';
 import Unspecfic from '../Unspecfic';
 import { IPost } from '../../../models/IPost';
+import { Neo4jService } from '../../../services/Neo4j.service';
 
 export let PostDetailInstance = null;
 class PostDetail extends React.Component<any, any> {
@@ -23,6 +24,7 @@ class PostDetail extends React.Component<any, any> {
     safetyFlag = false;
     sub$: any;
     votesRef: React.RefObject<any>;
+    neoService: Neo4jService;
     constructor(props: any) {
         super(props);
         PostDetailInstance = this;
@@ -34,6 +36,7 @@ class PostDetail extends React.Component<any, any> {
         this.toggleModal = this.toggleModal.bind(this);
         this.onSafetyFlag = this.onSafetyFlag.bind(this);
         this.votesRef = React.createRef();
+        this.neoService = new Neo4jService();
     }
     static contextType = AppContext;
     state = {
@@ -67,7 +70,8 @@ class PostDetail extends React.Component<any, any> {
 
     onUnclear() {
         const answer =
-            this.state.post?.answer?.body || this.state.post?.extract;
+            this.state.post?.answers?.map(x => x.body).join(' ') ||
+            this.state.post?.answers?.map(x => x.extract).join(' ');
         const rawText = Helpers.convertHTML(answer);
         const keywords = rake(rawText);
 
@@ -98,9 +102,12 @@ class PostDetail extends React.Component<any, any> {
         const { data } = await this.tagService.get(tag);
         const pageData = data?.query?.pages;
 
-        const filteredCats = this.processCategories(pageData);
-
+        const filteredCats = this.processCategories(pageData).map(x =>
+            x.slice(x.indexOf(':') + 1, x.length)
+        );
+        
         console.log(filteredCats);
+        this.neoService.createNodes(filteredCats);
         this.setState({
             post: {
                 answers: [pageData[Object.keys(pageData)[0]]],
@@ -157,7 +164,9 @@ class PostDetail extends React.Component<any, any> {
             'burial sites of the house',
             'births',
             'deaths',
-            'ac with'
+            'ac with',
+            'introductions',
+            'inventions'
         ];
 
         const categories: string[] = (
@@ -213,7 +222,14 @@ class PostDetail extends React.Component<any, any> {
                 options={{
                     asciimath2jax: {
                         useMathMLspacing: true,
-                        delimiters: [['$', '$', '$$']],
+                        delimiters: [
+                            ['$', '$', '$$', '$$'],
+                            ['{\\displaystyle', '}'],
+                            ['{\\textstyle', '}'],
+                            ['{\\frac', '}'],
+                            ['{\\begin', '}'],
+                            ['{\\end{', '}']
+                        ],
                         preview: 'none'
                     }
                 }}
@@ -386,7 +402,7 @@ class PostDetail extends React.Component<any, any> {
                                     ></Unclear>
                                 </div>
                                 <div>
-                                    <Label
+                                    {/* <Label
                                         className="la-choice-actions__btn"
                                         color="green"
                                         size="large"
@@ -397,7 +413,7 @@ class PostDetail extends React.Component<any, any> {
                                             disabled
                                             name="angle double right"
                                         />
-                                    </Label>
+                                    </Label> */}
                                 </div>
                             </Container>
                         </Container>
