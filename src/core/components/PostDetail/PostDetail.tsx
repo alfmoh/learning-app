@@ -98,13 +98,14 @@ class PostDetail extends React.Component<any, any> {
         this.safetyFlag = true;
     }
 
-    async loadTag(tag: any) {
-        const { data } = await this.tagService.get(tag);
+    async loadTag(searchWord: any) {
+        const { data } = await this.tagService.get(searchWord);
         const pageData = data?.query?.pages;
 
         const filteredCats = this.processCategories(pageData).map(x =>
             x.slice(x.indexOf(':') + 1, x.length)
         );
+        filteredCats.push(searchWord);
         
         console.log(filteredCats);
         this.neoService.createNodes(filteredCats);

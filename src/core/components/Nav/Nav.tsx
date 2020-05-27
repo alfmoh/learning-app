@@ -5,12 +5,15 @@ import { Link, navigate } from '@reach/router';
 import { AppContext } from '../../../shared/contexts/Context';
 import { AuthService } from '../../../services/Auth.service';
 import { PostDetailInstance } from '../PostDetail';
+import { Neo4jService } from '../../../services/Neo4j.service';
 
 class Nav extends React.Component<any, any> {
     static contextType = AppContext;
+    neoService: Neo4jService;
     constructor(props: any) {
         super(props);
         this.searchKeyword = this.searchKeyword.bind(this);
+        this.neoService = new Neo4jService();
     }
     state = {
         user: null
@@ -33,7 +36,14 @@ class Nav extends React.Component<any, any> {
                 <div className="la-menu-container">
                     <Menu secondary>
                         <Menu.Item header>
-                            <Link to="/">Learning App</Link>
+                            <Link
+                                onClick={() => {
+                                    this.neoService.childNodes = [];
+                                }}
+                                to="/"
+                            >
+                                Learning App
+                            </Link>
                         </Menu.Item>
                         <Menu.Item>
                             <Input

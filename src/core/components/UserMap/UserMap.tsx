@@ -6,7 +6,7 @@ import UserNote from '../UserNote';
 
 class UserMap extends React.Component<any, any> {
     state = {
-        data: {},
+        data: {} as any,
         node: ''
     };
     graphConfig = {
@@ -34,17 +34,31 @@ class UserMap extends React.Component<any, any> {
             <div>
                 {Object.keys(this.state?.data).length ? (
                     <React.Fragment>
-                        <div className="content--background">
-                            <Graph
-                                id="graph-id"
-                                data={this.state.data}
-                                config={this.graphConfig}
-                                onClickNode={(node: any) => {
-                                    this.setState({ node });
-                                }}
-                            />
-                        </div>
-                        {this.state.node && <UserNote node={this.state.node} />}
+                        {this.state?.data?.nodes?.length ? (
+                            <React.Fragment>
+                                <div className="content--background">
+                                    <Graph
+                                        id="graph-id"
+                                        data={this.state.data}
+                                        config={this.graphConfig}
+                                        onClickNode={(node: any) => {
+                                            this.setState({ node });
+                                        }}
+                                    />
+                                </div>
+                                {this.state.node && (
+                                    <UserNote node={this.state.node} />
+                                )}
+                            </React.Fragment>
+                        ) : (
+                            <div className="content--background">
+                                <p>No nodes yet.</p>
+                                <p>
+                                    Navigate and Search for keywords to create
+                                    nodes.
+                                </p>
+                            </div>
+                        )}
                     </React.Fragment>
                 ) : (
                     <LaLoader />
