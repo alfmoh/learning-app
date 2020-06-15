@@ -73,7 +73,7 @@ export class Neo4jService extends WebService<any> {
             if (this.childNodes.length) {
                 const parentNodes = nodes
                     .concat(this.childNodes)
-                    .map(x => x.toLocaleLowerCase())
+                    .map(x => x.split('-').join(' ').toLocaleLowerCase())
                     .filter((x, i, arr) => arr.indexOf(x) === i)
                     .map(x => "'" + x + "'");
                 const stringfyChildren = this.childNodes.map(

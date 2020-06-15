@@ -167,7 +167,8 @@ class PostDetail extends React.Component<any, any> {
             'deaths',
             'ac with',
             'introductions',
-            'inventions'
+            'inventions',
+            'pages with'
         ];
 
         const categories: string[] = (
